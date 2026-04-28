@@ -5,10 +5,8 @@
     "": {
       "name": "api_ia",
       "devDependencies": {
-        "@types/bun": "latest",
-      },
-      "peerDependencies": {
-        "typescript": "^5",
+        "@types/bun": "1.3.13",
+        "typescript": "5.9.3",
       },
     },
   },
