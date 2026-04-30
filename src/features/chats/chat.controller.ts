@@ -1,18 +1,9 @@
-import { DEFAULT_MODEL, OPENROUTER_API_KEY } from "../../config";
+import { DEFAULT_MODEL } from "../../config";
 import { jsonResponse } from "../../lib/http";
-import { createOpenRouterChatStream } from "../../services/openrouter.service";
+import { createRoundRobinChatStream } from "../../services/llm-router.service";
 import { parseChatRequest, resolveMessages } from "./chat.parsers";
 
 export async function handleChat(req: Request) {
-  if (!OPENROUTER_API_KEY) {
-    return jsonResponse(
-      {
-        error: "Missing OPENROUTER_API_KEY environment variable",
-      },
-      500,
-    );
-  }
-
   let body;
 
   try {
@@ -48,7 +39,7 @@ export async function handleChat(req: Request) {
     }
 
     const encoder = new TextEncoder();
-    const { model, stream } = await createOpenRouterChatStream({
+    const { provider, model, stream } = await createRoundRobinChatStream({
       model: body.model || DEFAULT_MODEL,
       messages,
     });
@@ -63,7 +54,7 @@ export async function handleChat(req: Request) {
         };
 
         try {
-          sendEvent("meta", { model });
+          sendEvent("meta", { provider, model });
 
           for await (const chunk of stream) {
             const content = chunk.choices[0]?.delta?.content;
@@ -81,7 +72,7 @@ export async function handleChat(req: Request) {
           controller.close();
         } catch (error) {
           sendEvent("error", {
-            message: error instanceof Error ? error.message : "OpenRouter request failed",
+            message: error instanceof Error ? error.message : "LLM request failed",
           });
           controller.close();
         }
@@ -99,7 +90,7 @@ export async function handleChat(req: Request) {
   } catch (error) {
     return jsonResponse(
       {
-        error: error instanceof Error ? error.message : "OpenRouter request failed",
+        error: error instanceof Error ? error.message : "LLM request failed",
       },
       502,
     );

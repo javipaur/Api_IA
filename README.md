@@ -23,6 +23,12 @@ OPENROUTER_API_KEY=your_openrouter_api_key
 OPENROUTER_MODEL=openrouter/free
 OPENROUTER_SITE_URL=http://localhost:3000
 OPENROUTER_APP_NAME=Api_IA
+GROQ_API_KEY=your_groq_api_key
+GROQ_MODEL=gpt-oss-20b
+GROQ_BASE_URL=https://api.groq.com/openai/v1
+CEREBRAS_API_KEY=your_cerebras_api_key
+CEREBRAS_MODEL=yama
+CEREBRAS_BASE_URL=https://api.cerebras.ai/v1
 PORT=3000
 ```
 
@@ -38,7 +44,7 @@ Accepts either a `prompt` or a `messages` array, uses `@openrouter/sdk`, and ret
 
 By default it responds **as a stream (SSE)** with events:
 
-- `meta`: `{ "model": "..." }`
+- `meta`: `{ "provider": "...", "model": "..." }`
 - `delta`: `{ "content": "..." }` (many times)
 - `done`: `{ "reasoningTokens": number|null }`
 
